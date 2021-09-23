@@ -1,101 +1,92 @@
 class BasicNode:
-    def __init__(self, px, py, data):
-        self.px = px
-        self.py = py
+    def __init__(self, data):
         self.data = data
         self.Next = None
 
 
+class DoubleNode:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+        self.prev = None
+
+
 class BasicLinkedList:
     def __init__(self):
-        self.First = None
+        self.first = None
         self.length = 0
 
-    def insert(self, px, py, data):
-        new_node = BasicNode(px, py, data)
-        if self.First is None:
-            self.First = new_node
+    def insert(self, data):
+        new_node = BasicNode(data)
+        if self.first is None:
+            self.first = new_node
             self.length += 1
         else:
-            tmp = self.First
+            tmp = self.first
             while tmp.Next is not None:
                 tmp = tmp.Next
             tmp.Next = new_node
             self.length += 1
 
-    def get_value(self, px, py):
-        tmp = self.First
-        while (tmp.px != px or tmp.py != py) and tmp.Next is not None:
+    def len(self):
+        return self.length
+
+    def show_all(self):
+        tmp = self.first
+        cont = 1
+        while tmp.next is not None:
+            print(f"en la lista de valores en la posicion {cont} es {tmp.data}")
+            tmp = tmp.next
+            cont = cont + 1
+
+    def get(self, pos):
+        tmp = self.first
+        cont = 0
+        while tmp.Next is not None and cont != pos:
             tmp = tmp.Next
+        return tmp.data
+
+
+class DoubleLinkedList:
+    def __init__(self):
+        self.first = None
+        self.last = None
+        self.actual = None
+        self.length = 0
+
+    def insert(self, data):
+        new_node = DoubleNode(data)
+        if self.first is None:
+            self.first = new_node
+            self.length += 1
+        else:
+            tmp = self.first
+            while tmp.next is not None:
+                tmp = tmp.next
+            tmp.next = new_node
+            new_node.prev = tmp
+            self.length += 1
+
+    def get_value(self, px, py):
+        tmp = self.first
+        while (tmp.px != px or tmp.py != py) and tmp.next is not None:
+            tmp = tmp.next
         return tmp.data
 
     def len(self):
         return self.length
 
     def show_all(self):
-        tmp = self.First
-        while tmp.Next is not None:
+        tmp = self.first
+        while tmp.next is not None:
             print(f"en la lista de valores en la posicion x({tmp.px}) y({tmp.py}) el peso de la casilla es {tmp.data}")
-            tmp = tmp.Next
+            tmp = tmp.next
 
     def update(self, px, py, value):
-        tmp = self.First
-        while (tmp.px != px or tmp.py != py) and tmp.Next is not None:
-            tmp = tmp.Next
+        tmp = self.first
+        while (tmp.px != px or tmp.py != py) and tmp.next is not None:
+            tmp = tmp.next
         tmp.data = value
-
-
-class Matrix:
-    def __init__(self, row_count, col_count, value_list):
-        self.matrix = BasicLinkedList()
-        self.columns = col_count
-        self.rows = row_count
-        rows = BasicLinkedList()
-        for y in range(row_count):
-            cols = BasicLinkedList()
-            for x in range(col_count):
-                value = value_list.get_value(x, y)
-                cols.insert(x, y, value)
-                # value = randint(1, 100)
-                # cols.insert(x, y, value)
-                # print(f" Row:{y+1} Column:{x+1} Value:{value}")
-            rows.insert(0, y, cols)
-        self.matrix = rows
-
-    def get_value(self, x, y):
-        row = self.matrix.get_value(0, y)
-        col = row.First
-        while col.px != x or col.py != y and col is not None:
-            col = col.Next
-
-        return col.data
-
-    def display_in_menu(self):
-        mt = self.matrix
-        tmp = self.matrix.First
-        while tmp.Next is not None:
-            line = "|"
-            col_tmp = tmp.data.First
-            while col_tmp is not None:
-                line += f"{col_tmp.data}|"
-                col_tmp = col_tmp.Next
-            print(line)
-            tmp = tmp.Next
-            """ This last part of the code is to show the last 
-            iteration / last row"""
-        line = "|"
-        col_tmp = tmp.data.First
-        while col_tmp is not None:
-            line += f"{col_tmp.data}|"
-            col_tmp = col_tmp.Next
-        print(line)
-
-    def update_value(self, x, y, value):
-        row = self.matrix.get_value(0, y)
-        col = row.First
-        while col.px != x or col.py != y and col is not None:
-            col = col.Next
-        col.data = value
 
 
 class Queue:
@@ -120,7 +111,7 @@ class Queue:
             print("No items in the queue")
         else:
             data = self.Head
-            self.Head = self.Head.Next
+            self.Head = self.Head.next
             if self.Head is None:
                 self.Tail = None
             self.len -= 1
@@ -131,9 +122,9 @@ class Queue:
 
     def show_queue(self):
         tmp = self.Head
-        while tmp.Next is not None:
+        while tmp.next is not None:
             print(f"{tmp.data}")
-            tmp = tmp.Next
+            tmp = tmp.next
         print(f"{tmp.data}")
 
     def peek(self):
