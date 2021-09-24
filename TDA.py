@@ -1,7 +1,7 @@
 class BasicNode:
     def __init__(self, data):
         self.data = data
-        self.Next = None
+        self.next = None
 
 
 class DoubleNode:
@@ -23,9 +23,9 @@ class BasicLinkedList:
             self.length += 1
         else:
             tmp = self.first
-            while tmp.Next is not None:
-                tmp = tmp.Next
-            tmp.Next = new_node
+            while tmp.next is not None:
+                tmp = tmp.next
+            tmp.next = new_node
             self.length += 1
 
     def len(self):
@@ -33,18 +33,31 @@ class BasicLinkedList:
 
     def show_all(self):
         tmp = self.first
-        cont = 1
+        cont = 0
         while tmp.next is not None:
             print(f"en la lista de valores en la posicion {cont} es {tmp.data}")
             tmp = tmp.next
             cont = cont + 1
+        print(f"en la lista de valores en la posicion {cont} es {tmp.data}")
 
     def get(self, pos):
         tmp = self.first
         cont = 0
-        while tmp.Next is not None and cont != pos:
-            tmp = tmp.Next
+        while tmp.next is not None and cont != pos:
+            tmp = tmp.next
+            cont += 1
         return tmp.data
+
+    def append(self, basic_list):
+        if self.first is None:
+            self.first = basic_list.first
+            self.length += basic_list.len()
+        else:
+            tmp = self.first
+            while tmp.next is not None:
+                tmp = tmp.next
+            tmp.next = basic_list.first
+            self.length += basic_list.len()
 
 
 class DoubleLinkedList:
@@ -91,29 +104,29 @@ class DoubleLinkedList:
 
 class Queue:
     def __init__(self):
-        self.Head = None
-        self.Tail = None
+        self.head = None
+        self.tail = None
         self.len = 0
 
-    def enqueue(self, px, py, data):
-        new_node = BasicNode(px, py, data)
-        if self.Head is None:
-            self.Head = new_node
-            self.Tail = self.Head
+    def enqueue(self, data):
+        new_node = BasicNode(data)
+        if self.head is None:
+            self.head = new_node
+            self.tail = self.head
             self.len += 1
         else:
-            self.Tail.Next = new_node
-            self.Tail = new_node
+            self.tail.next = new_node
+            self.tail = new_node
             self.len += 1
 
     def dequeue(self):
-        if self.Head is None:
+        if self.head is None:
             print("No items in the queue")
         else:
-            data = self.Head
-            self.Head = self.Head.next
-            if self.Head is None:
-                self.Tail = None
+            data = self.head
+            self.head = self.head.next
+            if self.head is None:
+                self.tail = None
             self.len -= 1
             return data
 
@@ -121,14 +134,14 @@ class Queue:
         return self.len
 
     def show_queue(self):
-        tmp = self.Head
+        tmp = self.head
         while tmp.next is not None:
             print(f"{tmp.data}")
             tmp = tmp.next
         print(f"{tmp.data}")
 
     def peek(self):
-        return self.Head
+        return self.head
 
     def last(self):
-        return self.Tail
+        return self.tail

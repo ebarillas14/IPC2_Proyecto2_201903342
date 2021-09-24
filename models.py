@@ -1,3 +1,9 @@
+class Component:
+    def __init__(self, t_b_a, a):
+        self.to_assembled = t_b_a
+        self.assembled = a
+
+
 class ProductionLine:
     def __init__(self, number, components_q, assemble_t):
         self.number = number
@@ -22,3 +28,9 @@ class Simulation:
     def __init__(self, name, products_list):
         self.name = name
         self.prod_list = products_list
+
+    def get_name(self):
+        return self.name
+
+    def get_products(self):
+        return self.prod_list
