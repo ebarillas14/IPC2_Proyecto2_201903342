@@ -1,6 +1,8 @@
 from xml.etree.ElementTree import Element, SubElement, ElementTree
 from TDA import *
 from models import *
+from graphviz import Graph
+import os
 import xml.etree.ElementTree as ET
 
 
@@ -10,26 +12,30 @@ def load_configuration_xml(route):
     prod_lines_am = root.find('CantidadLineasProduccion')
     prod_lines = root.find('ListadoLineasProduccion')
     product_list = root.find('ListadoProductos')
-    print(prod_lines_am.text)
-    pll = pl = BasicLinkedList()
+    pll = BasicLinkedList()
+    pl = BasicLinkedList()
     for line in prod_lines.findall('LineaProduccion'):
         num = line.find('Numero')
         components_am = line.find('CantidadComponentes')
         assemble_time = line.find('TiempoEnsamblaje')
         p_line = ProductionLine(num, components_am, assemble_time)
         pll.insert(p_line)
-        print(num.text)
+        """print(num.text)
         print(components_am.text)
-        print(assemble_time.text)
+        print(assemble_time.text)"""
 
     for product in product_list.findall('Producto'):
         name = product.find('nombre')
+        name = name.text.replace("\n", "").replace(" ", "")
         instructions = product.find('elaboracion')
-        # Need to create a instructions queue
-        prod = Product(name, instructions)
+
+        instructions_queue = Queue()
+        instructions_list = instructions.text.split(' ')
+        for ins in instructions_list:
+            if ins != '' and ins != '\n':
+                instructions_queue.enqueue(ins)
+        prod = Product(name, instructions_queue)
         pl.insert(prod)
-        print(name.text)
-        print(instructions.text)
 
     actual_machine = Machine(prod_lines_am, pll, pl)
 
@@ -39,9 +45,12 @@ def load_configuration_xml(route):
 def load_simulation_xml(route):
     tree = ET.parse(route)
     root = tree.getroot()
-    names = prod_list = simulation_list = BasicLinkedList()
+    names = BasicLinkedList()
+    prod_list = BasicLinkedList()
+    simulation_list = BasicLinkedList()
 
     for name in root.findall('Nombre'):
+        name = name.text.replace("\n", "").replace(" ", "")
         names.insert(name)
 
     # Extracts all of the arrays with tags Listado Productos
@@ -51,7 +60,8 @@ def load_simulation_xml(route):
         product_list = BasicLinkedList()
         # Extracts all of the products contained in the array
         for product in p_list.findall('Producto'):
-            product_list.insert(product)
+            text = product.text.replace("\n", "").replace(" ", "")
+            product_list.insert(text)
 
         prod_list.insert(product_list)
 
@@ -60,7 +70,20 @@ def load_simulation_xml(route):
     else:
         for pos in range(names.len()):
             name = names.get(pos)
+            name = name.replace("\n", "")
             products_list = prod_list.get(pos)
             simulation_list.insert(Simulation(name, products_list))
 
     return simulation_list
+
+
+def generate_graph_queue(process_queue, prod_name, simulation_name):
+    dot = Graph(f'{simulation_name}-{prod_name}', format='png')
+    temp = process_queue
+    for i in range(process_queue.length()):
+        dot.node(f"node{i}", f"{process_queue.dequeue()}", shape="box")
+        if i > 0:
+            dot.edge(f"node{i-1}", f"node{i}",)
+
+    dot.render(f'{simulation_name}-{prod_name}')
+    os.system(f'{simulation_name}-{prod_name}.png')
