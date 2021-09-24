@@ -1,0 +1,22 @@
+<Simulacion>
+<Nombre> Simulacion_1 </Nombre>
+<ListadoProductos>
+<Producto> SuperComputadora </Producto>
+<Producto> SmartWatch </Producto>
+</ListadoProductos>
+<Nombre> Simulacion_2 </Nombre>
+<ListadoProductos>
+<Producto> dan</Producto>
+<Producto> df</Producto>
+</ListadoProductos>
+<Nombre> Simulacion_3 </Nombre>
+<ListadoProductos>
+<Producto> Super </Producto>
+<Producto> Watch </Producto>
+</ListadoProductos>
+<Nombre> Simulacion_4 </Nombre>
+<ListadoProductos>
+<Producto> Computadora </Producto>
+<Producto> Smart </Producto>
+</ListadoProductos>
+</Simulacion>
