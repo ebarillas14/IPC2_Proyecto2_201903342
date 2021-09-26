@@ -11,6 +11,13 @@ class DoubleNode:
         self.prev = None
 
 
+class Node:
+    def __init__(self, data, name):
+        self.data = data
+        self.name = name
+        self.next = None
+
+
 class BasicLinkedList:
     def __init__(self):
         self.first = None
@@ -60,6 +67,61 @@ class BasicLinkedList:
             self.length += basic_list.len()
 
 
+class LinkedList:
+    def __init__(self):
+        self.first = None
+        self.length = 0
+
+    def insert(self, data, name):
+        new_node = Node(data, name)
+        if self.first is None:
+            self.first = new_node
+            self.length += 1
+        else:
+            tmp = self.first
+            while tmp.next is not None:
+                tmp = tmp.next
+            tmp.next = new_node
+            self.length += 1
+
+    def len(self):
+        return self.length
+
+    def show_all(self):
+        tmp = self.first
+        cont = 0
+        while tmp.next is not None:
+            print(f"en la lista de valores en la posicion {cont} es {tmp.name}")
+            tmp = tmp.next
+            cont = cont + 1
+        print(f"en la lista de valores en la posicion {cont} es {tmp.name}")
+
+    def get(self, pos):
+        tmp = self.first
+        cont = 0
+        while tmp.next is not None and cont != pos:
+            tmp = tmp.next
+            cont += 1
+        return tmp.data
+
+    def get_by_name(self, name):
+        tmp = self.first
+        while tmp.next is not None and name != tmp.name:
+            tmp = tmp.next
+        return tmp.data
+
+    def append(self, basic_list):
+        if self.first is None:
+            self.first = basic_list.first
+            self.length += basic_list.len()
+        else:
+            tmp = self.first
+            while tmp.next is not None:
+                tmp = tmp.next
+            tmp.next = basic_list.first
+            self.length += basic_list.len()
+
+
 class DoubleLinkedList:
     def __init__(self):
         self.first = None
@@ -80,10 +142,12 @@ class DoubleLinkedList:
             new_node.prev = tmp
             self.length += 1
 
-    def get_value(self, px, py):
+    def get(self, pos):
         tmp = self.first
-        while (tmp.px != px or tmp.py != py) and tmp.next is not None:
+        cont = 0
+        while pos != cont and tmp.next is not None:
             tmp = tmp.next
+            cont += 1
         return tmp.data
 
     def len(self):
@@ -100,6 +164,19 @@ class DoubleLinkedList:
         while (tmp.px != px or tmp.py != py) and tmp.next is not None:
             tmp = tmp.next
         tmp.data = value
+
+    def move_forward(self):
+        node = self.actual
+        if node != self.last:
+            self.actual = node.next
+
+    def move_backwards(self):
+        node = self.actual
+        if node != self.first:
+            self.actual = node.prev
+
+    def get_actual(self):
+        return self.actual
 
 
 class Queue:
@@ -145,3 +222,9 @@ class Queue:
 
     def last(self):
         return self.tail
+
+    def is_empty(self):
+        if self.len != 0:
+            return False
+        else:
+            return True

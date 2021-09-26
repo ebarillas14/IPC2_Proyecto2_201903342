@@ -1,5 +1,6 @@
 class Component:
-    def __init__(self, t_b_a, a):
+    def __init__(self, a, name, t_b_a):
+        self.name = name
         self.to_assembled = t_b_a
         self.assembled = a
 
@@ -15,6 +16,7 @@ class Product:
     def __init__(self, name, assemble_ins):
         self.name = name
         self.assemble_q = assemble_ins
+        self.production_matrix = None
 
 
 class Machine:

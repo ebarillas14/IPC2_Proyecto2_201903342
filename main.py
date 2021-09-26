@@ -112,7 +112,10 @@ class WindowDesign:
         filename = filedialog.askopenfilename(initialdir="./static/", title="Choose a XML File",
                                               filetypes=(("XML Files", "*.xml"), ("All Files", " *.*")))
         self.config_route_c.set(filename)
-        self.machine_configuration = load_configuration_xml(filename)
+        machine = load_configuration_xml(filename)
+        self.machine_configuration = machine
+
+        generate_production_lines(machine)
 
     def load_simulation(self):
         filename = filedialog.askopenfilename(initialdir="./static/", title="Choose a XML File",
@@ -143,7 +146,8 @@ class WindowDesign:
 
         q = product.data.assemble_q
         q.show_queue()
-        generate_graph_queue(q, name_of_simulation, name_of_product)
+        # generate_graph_queue(q, name_of_simulation, name_of_product)
+        generate_simulation(self.machine_configuration, name_of_simulation)
 
     def update_names(self):
         sim = self.simulation_names_list.first

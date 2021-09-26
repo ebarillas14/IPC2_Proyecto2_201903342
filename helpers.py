@@ -10,14 +10,18 @@ def load_configuration_xml(route):
     tree = ET.parse(route)
     root = tree.getroot()
     prod_lines_am = root.find('CantidadLineasProduccion')
+    prod_lines_am = prod_lines_am.text.replace("\n", "").replace(" ", "")
     prod_lines = root.find('ListadoLineasProduccion')
     product_list = root.find('ListadoProductos')
     pll = BasicLinkedList()
     pl = BasicLinkedList()
     for line in prod_lines.findall('LineaProduccion'):
         num = line.find('Numero')
+        num = num.text.replace("\n", "").replace(" ", "")
         components_am = line.find('CantidadComponentes')
+        components_am = components_am.text.replace("\n", "").replace(" ", "")
         assemble_time = line.find('TiempoEnsamblaje')
+        assemble_time = assemble_time.text.replace("\n", "").replace(" ", "")
         p_line = ProductionLine(num, components_am, assemble_time)
         pll.insert(p_line)
         """print(num.text)
@@ -70,7 +74,7 @@ def load_simulation_xml(route):
     else:
         for pos in range(names.len()):
             name = names.get(pos)
-            name = name.replace("\n", "")
+            name = name.replace("\n", "").replace(" ", "")
             products_list = prod_list.get(pos)
             simulation_list.insert(Simulation(name, products_list))
 
@@ -81,9 +85,54 @@ def generate_graph_queue(process_queue, prod_name, simulation_name):
     dot = Graph(f'{simulation_name}-{prod_name}', format='png')
     temp = process_queue
     for i in range(process_queue.length()):
-        dot.node(f"node{i}", f"{process_queue.dequeue()}", shape="box")
+        node = temp.dequeue()
+        dot.node(f"node{i}", f"{node.data}", shape="box")
         if i > 0:
             dot.edge(f"node{i-1}", f"node{i}",)
 
     dot.render(f'{simulation_name}-{prod_name}')
     os.system(f'{simulation_name}-{prod_name}.png')
+
+
+def generate_production_lines(machine):
+    amount_pl = machine.production_lines
+    production_lines = machine.lines_list
+    products = machine.products_list
+
+    product = products.first
+    production_lines_matrix = LinkedList()
+    while product.next is not None:
+        for i in range(int(amount_pl)):
+            assemble_line = DoubleLinkedList()
+            production_line = production_lines.get(i)
+            for j in range(int(production_line.components_q)):
+                assemble_line.insert(Component(False, f"C{j+1}", False))
+            production_lines_matrix.insert(assemble_line, f"L{production_line.number}")
+
+        while not product.data.assemble_q.is_empty():
+            component = product.data.assemble_q.dequeue()
+            split_line = component.data.split('p')
+            line = split_line[0]
+            component_name = split_line[1]
+            component_name = component_name.replace("C", "")
+            component_num = int(component_name)
+            components = production_lines_matrix.get_by_name(line)
+            item = components.get(component_num-1)
+            item.to_assembled = True
+        product.production_matrix = production_lines_matrix
+        product = product.next
+
+
+def generate_simulation(machine, p_to_simulate):
+    products = machine.products_list
+    product = products.first
+    production_lines = LinkedList()
+    while product.next is not None and product.name != p_to_simulate:
+        product = product.next
+    production_matrix = product.production_matrix
+    assemble_queue = product.assemble_q
+
+    time = 1
+    while not assemble_queue.is_empty():
+        component = assemble_queue.dequeue()
+        print(component.name)
