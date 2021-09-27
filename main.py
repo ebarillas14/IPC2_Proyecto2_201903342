@@ -144,10 +144,22 @@ class WindowDesign:
         while product.next is not None and product.data.name != name_of_product:
             product = product.next
 
+        graph_queue_report = Queue()
+        queue_simulation = Queue()
+        actual_queue = Queue()
         q = product.data.assemble_q
-        q.show_queue()
-        # generate_graph_queue(q, name_of_simulation, name_of_product)
-        generate_simulation(self.machine_configuration, name_of_simulation)
+        while not q.is_empty():
+            temp = q.dequeue()
+            graph_queue_report.enqueue(temp.data)
+            queue_simulation.enqueue(temp.data)
+            actual_queue.enqueue(temp.data)
+
+        production_matrix = product.data.production_matrix
+
+        product.assemble_q = actual_queue
+        actual_queue.show_queue()
+        generate_graph_queue(graph_queue_report, name_of_simulation, name_of_product)
+        generate_simulation(queue_simulation, production_matrix, name_of_simulation, name_of_product)
 
     def update_names(self):
         sim = self.simulation_names_list.first

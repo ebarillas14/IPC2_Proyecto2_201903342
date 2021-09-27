@@ -34,9 +34,11 @@ def load_configuration_xml(route):
         instructions = product.find('elaboracion')
 
         instructions_queue = Queue()
-        instructions_list = instructions.text.split(' ')
+        instructions = instructions.text.replace("\n", "").strip()
+
+        instructions_list = instructions.split(' ')
         for ins in instructions_list:
-            if ins != '' and ins != '\n':
+            if ins != '':
                 instructions_queue.enqueue(ins)
         prod = Product(name, instructions_queue)
         pl.insert(prod)
@@ -83,12 +85,14 @@ def load_simulation_xml(route):
 
 def generate_graph_queue(process_queue, prod_name, simulation_name):
     dot = Graph(f'{simulation_name}-{prod_name}', format='png')
+    dot.graph_attr['rankdir'] = 'LR'
     temp = process_queue
     for i in range(process_queue.length()):
         node = temp.dequeue()
         dot.node(f"node{i}", f"{node.data}", shape="box")
         if i > 0:
-            dot.edge(f"node{i-1}", f"node{i}",)
+            dot.edge(f"node{i-1}", f"node{i}", "Next")
+            dot.node_attr['arrowhead'] = 'diamond'
 
     dot.render(f'{simulation_name}-{prod_name}')
     os.system(f'{simulation_name}-{prod_name}.png')
@@ -109,8 +113,10 @@ def generate_production_lines(machine):
                 assemble_line.insert(Component(False, f"C{j+1}", False))
             production_lines_matrix.insert(assemble_line, f"L{production_line.number}")
 
+        assemble_queue = Queue()
         while not product.data.assemble_q.is_empty():
             component = product.data.assemble_q.dequeue()
+            assemble_queue.enqueue(component.data)
             split_line = component.data.split('p')
             line = split_line[0]
             component_name = split_line[1]
@@ -120,19 +126,15 @@ def generate_production_lines(machine):
             item = components.get(component_num-1)
             item.to_assembled = True
         product.production_matrix = production_lines_matrix
+        product.data.production_matrix = production_lines_matrix
+        product.assemble_q = assemble_queue
+        product.data.assemble_q = assemble_queue
         product = product.next
 
 
-def generate_simulation(machine, p_to_simulate):
-    products = machine.products_list
-    product = products.first
-    production_lines = LinkedList()
-    while product.next is not None and product.name != p_to_simulate:
-        product = product.next
-    production_matrix = product.production_matrix
-    assemble_queue = product.assemble_q
-
+def generate_simulation(assemble_queue, production_matrix, simulation_name, product_name):
     time = 1
+    a_q = assemble_queue
     while not assemble_queue.is_empty():
         component = assemble_queue.dequeue()
-        print(component.name)
+        print(component.data)
