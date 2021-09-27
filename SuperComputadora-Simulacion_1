@@ -1,0 +1,13 @@
+graph "SuperComputadora-Simulacion_1" {
+	graph [rankdir=LR]
+	node [arrowhead=diamond]
+	node0 [label=L1pC3p shape=box]
+	node1 [label=L2pC1p shape=box]
+	node0 -- node1 [label=Next]
+	node2 [label=L1pC1p shape=box]
+	node1 -- node2 [label=Next]
+	node3 [label=L2pC3p shape=box]
+	node2 -- node3 [label=Next]
+	node4 [label=L2pC2p shape=box]
+	node3 -- node4 [label=Next]
+}
